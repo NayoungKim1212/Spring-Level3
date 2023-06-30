@@ -15,7 +15,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/user/signup")
+    @PostMapping("/auth/signup")
     public String signup(SignupRequestDto requestDto) {
         userService.signup(requestDto);
     }
