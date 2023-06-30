@@ -18,7 +18,7 @@ public class PostService {
     }
 
 
-    public PostResponseDto createPost(PostRequestDto requestDto) {
+    public PostResponseDto createPost(String token, PostRequestDto requestDto) {
         Post post = new Post(requestDto);
 
         Post savePost = postRepository.save(post);
@@ -34,29 +34,29 @@ public class PostService {
         return new PostResponseDto(findPost(id));
     }
 
-    @Transactional
-    public PostResponseDto updatePost(Long id, PostRequestDto requestDto) {
-
-        Post post = findPost(id);
-        // 만약 post의 getpassword와 requestDto의 getpassword가 같으면
-        if(post.getPassword().equals(requestDto.getPassword())) {
-            post.update(requestDto);
-        }
-        return new PostResponseDto(post);
-
-    }
-
-    public String deletePost(Long id, String password) {
-
-        Post post = findPost(id);
-        if(post.getPassword().equals(password)) {
-            postRepository.delete(post);
-            return "success";
-
-        }else {
-            return "Error";
-        }
-    }
+//    @Transactional
+//    public PostResponseDto updatePost(Long id, PostRequestDto requestDto) {
+//
+//        Post post = findPost(id);
+//        // 만약 post의 getpassword와 requestDto의 getpassword가 같으면
+//        if(post.getPassword().equals(requestDto.getPassword())) {
+//            post.update(requestDto);
+//        }
+//        return new PostResponseDto(post);
+//
+//    }
+//
+//    public String deletePost(Long id, String password) {
+//
+//        Post post = findPost(id);
+//        if(post.getPassword().equals(password)) {
+//            postRepository.delete(post);
+//            return "success";
+//
+//        }else {
+//            return "Error";
+//        }
+//    }
 
     private Post findPost(Long id) {
         return postRepository.findById(id).orElseThrow(() ->

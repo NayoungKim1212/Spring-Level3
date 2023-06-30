@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class User extends Timestamped{
     @Id
-    @Column(name = "user_id")
+//    @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
