@@ -1,6 +1,10 @@
 package com.sparta.post.jwt;
 
+import com.sparta.post.entity.UserRoleEnum;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,4 +37,10 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
+
+    public String createToken(String username, UserRoleEnum role) {
+    }
+
+    public void addJwtToCookie(String token, HttpServletResponse response) {
+    }
 }

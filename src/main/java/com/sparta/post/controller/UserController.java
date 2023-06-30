@@ -18,6 +18,7 @@ public class UserController {
     @PostMapping("/auth/signup")
     public String signup(SignupRequestDto requestDto) {
         userService.signup(requestDto);
+        return null;
     }
 
 }
