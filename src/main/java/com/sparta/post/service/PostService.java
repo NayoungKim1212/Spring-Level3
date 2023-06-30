@@ -43,6 +43,7 @@ public class PostService {
             post.update(requestDto);
         }
         return new PostResponseDto(post);
+
     }
 
     public String deletePost(Long id, String password) {
