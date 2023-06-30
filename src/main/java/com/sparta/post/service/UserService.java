@@ -4,6 +4,7 @@ import com.sparta.post.dto.SignupRequestDto;
 import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
