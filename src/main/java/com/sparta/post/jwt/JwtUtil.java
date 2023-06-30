@@ -1,17 +1,19 @@
 package com.sparta.post.jwt;
 
-import com.sparta.post.entity.UserRoleEnum;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.util.Base64;
+import java.util.Date;
 
 @Component
 public class JwtUtil {
@@ -37,10 +39,47 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
+    // 토큰 생성(JWT 생성)
+    public String createToken(String username) {
+        Date date = new Date();
 
-    public String createToken(String username, UserRoleEnum role) {
+        return BEARER_PREFIX +
+                Jwts.builder()
+                        .setSubject(username) // 사용자 식별자값(ID)
+                        .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
+                        .setIssuedAt(date) // 발급일
+                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                        .compact();
     }
 
-    public void addJwtToCookie(String token, HttpServletResponse response) {
+    // JWT 토큰 substring(Cookie에 들어있던 JWT 토큰을 Substring)
+    public String substringToken(String tokenValue) {
+        if(StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
+            // 공백인지 null인지 확인(공백과 null이 아니여야함)
+            return tokenValue.substring(7);
+        }
+        logger.error("Not Found Token");
+        throw new NullPointerException("Not Found Token");
+    }
+    // 토큰 검증(JWT 검증)
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token); // token의 위변조 검증
+            return true; // setSigningKey(key) : 암호화할 때 사용한 키
+        } catch (SecurityException | MalformedJwtException | SignatureException e) {
+            logger.error(("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다."));
+        } catch (ExpiredJwtException e) {
+            logger.error("Expired JWT token, 만료된 JWT token 입니다.");
+        } catch (UnsupportedJwtException e) {
+            logger.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
+        } catch (IllegalArgumentException e) {
+            logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
+        }
+        return false;
+    }
+
+    // 토큰에서 사용자 정보 가져오기(JWT에서 사용자 정보 가져오기)
+    public Claims getUserInfoFromToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 }
