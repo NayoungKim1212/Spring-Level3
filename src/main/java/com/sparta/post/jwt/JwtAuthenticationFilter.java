@@ -2,7 +2,6 @@ package com.sparta.post.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.post.dto.LoginRequestDto;
-import com.sparta.post.entity.UserRoleEnum;
 import com.sparta.post.security.UserDetailsImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -51,7 +50,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         log.info("로그인 성공 및 JWT 생성");
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername(); // Authentication(인증된 사용자)의 Principal(사용자를 식별, UserDetails)에서 Username 가져오기
-//        UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole(); // UserRole 가져오기
 
         String token = jwtUtil.createToken(username); // Username 을 포함하느 토큰 만들기
         // 쿠키에 안담고 토큰만 보내기 // 헤더에 보내기

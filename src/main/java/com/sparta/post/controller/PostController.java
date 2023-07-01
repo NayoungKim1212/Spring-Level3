@@ -2,7 +2,6 @@ package com.sparta.post.controller;
 
 import com.sparta.post.dto.PostRequestDto;
 import com.sparta.post.dto.PostResponseDto;
-import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

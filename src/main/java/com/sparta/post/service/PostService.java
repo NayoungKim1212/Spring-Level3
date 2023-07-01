@@ -3,9 +3,7 @@ package com.sparta.post.service;
 import com.sparta.post.dto.PostRequestDto;
 import com.sparta.post.dto.PostResponseDto;
 import com.sparta.post.entity.Post;
-import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.repository.PostRepository;
-import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -20,12 +18,9 @@ public class PostService {
 
     private final PostRepository postRepository;
 
-    private final JwtUtil jwtUtil;
-
     public PostResponseDto createPost(PostRequestDto requestDto) {
         String username = getUsername();
         Post post = new Post(requestDto, username);
-        System.out.println("username = " + username);
         postRepository.save(post);
         return new PostResponseDto(post);
     }
@@ -46,21 +41,21 @@ public class PostService {
     public PostResponseDto updatePost(Long id, PostRequestDto requestDto) {
         Post post = findPost(id);
         String username = getUsername();
-        if(username.equals(post.getUsername())) {
+        if (username.equals(post.getUsername())) {
             post.update(requestDto);
             return new PostResponseDto(post);
-        }else {
-            throw  new IllegalArgumentException("잘못된 사용자입니다.");
+        } else {
+            throw new IllegalArgumentException("잘못된 사용자입니다.");
         }
     }
 
     public void deletePost(Long id) {
         Post post = findPost(id);
         String username = getUsername();
-        if(username.equals(post.getUsername())) {
+        if (username.equals(post.getUsername())) {
             postRepository.delete(post);
         } else {
-            throw  new IllegalArgumentException("잘못된 사용자입니다.");
+            throw new IllegalArgumentException("잘못된 사용자입니다.");
         }
     }
 
@@ -70,36 +65,9 @@ public class PostService {
         );
     }
 
-    private boolean isTokenValid(String token, Post post) {
-
-        String username = getUsernameFromJwt(token);
-
-        if (username.equals(post.getUsername())) {
-            return true;
-        }
-        return false;
-    }
-
-
-    private String getUsernameFromJwt(String tokenValue) {
-
-        String token = jwtUtil.substringToken(tokenValue);
-
-        if (!jwtUtil.validateToken(tokenValue)) {
-
-            throw new IllegalArgumentException("Token Error");
-        }
-
-        // 토큰에서 사용자 정보 가져오기
-        Claims info = jwtUtil.getUserInfoFromToken(token);
-        String username = info.getSubject();
-        return username;
-    }
-
     public String getUsername() {
         System.out.println("이름 받아오는중");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); // SecurityContextHolder내부에 SecurityContext내부에 있는 Authentication을 받아옴
-        System.out.println("authentication = " + authentication);
         System.out.println("authentication.getName() = " + authentication.getName());
         if (authentication != null) {
             return authentication.getName(); // Authentication에서 이름을 받아온다.
@@ -108,5 +76,30 @@ public class PostService {
     }
 }
 
+//    private boolean isTokenValid(String token, Post post) {
+//
+//        String username = getUsernameFromJwt(token);
+//
+//        if (username.equals(post.getUsername())) {
+//            return true;
+//        }
+//        return false;
+//    }
+//
+//
+//    private String getUsernameFromJwt(String tokenValue) {
+//
+//        String token = jwtUtil.substringToken(tokenValue);
+//
+//        if (!jwtUtil.validateToken(tokenValue)) {
+//
+//            throw new IllegalArgumentException("Token Error");
+//        }
+//
+//        // 토큰에서 사용자 정보 가져오기
+//        Claims info = jwtUtil.getUserInfoFromToken(token);
+//        String username = info.getSubject();
+//        return username;
+//    }
 
 
