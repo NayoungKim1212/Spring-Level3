@@ -5,6 +5,7 @@ import com.sparta.post.dto.PostResponseDto;
 import com.sparta.post.entity.Post;
 import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.repository.PostRepository;
+import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -57,17 +58,45 @@ public class PostService {
         return null;
     }
 
-    public String deletePost(Long id, String password) {
-
+    public PostResponseDto deletePost(Long id, String token, PostRequestDto requestDto) {
         Post post = findPost(id);
-        return "Error";
+        if (isTokenValid(token, post)) {
+            postRepository.delete(post);
+        }
+        return new PostResponseDto(post);
     }
-
-}
 
     private Post findPost(Long id) {
         return postRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("헤당 게시물은 존재하지 않습니다.")
         );
     }
+    private boolean isTokenValid(String token, Post post) {
+
+        String username = getUsernameFromJwt(token);
+
+        if(username.equals(post.getUsername())) {
+            return true;
+        }
+        return false;
+    }
+
+
+    private String getUsernameFromJwt(String tokenValue) {
+
+        String token = jwtUtil.substringToken(tokenValue);
+
+        if (!jwtUtil.validateToken(tokenValue)) {
+
+            throw new IllegalArgumentException("Token Error");
+        }
+
+        // 토큰에서 사용자 정보 가져오기
+        Claims info = jwtUtil.getUserInfoFromToken(token);
+        String username = info.getSubject();
+        return username;
+    }
 }
+
+
+

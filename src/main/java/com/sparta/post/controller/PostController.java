@@ -19,7 +19,7 @@ public class PostController {
 
     // 게시글 작성
     @PostMapping("/post")
-    public ResponseEntity<?> createPost(@RequestHeader("Authorization") String token,
+    public ResponseEntity<?> createPost(@RequestHeader("Authorization") String token, // 헤더에 "Authorization" 필드로 토큰을 전달받음
                                       @RequestBody PostRequestDto requestDto) {
         PostResponseDto responseDto = postService.createPost(token, requestDto);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
@@ -37,12 +37,18 @@ public class PostController {
     }
 
     @PutMapping("/post/{id}")
-    public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, String token) {
-        return postService.updatePost(id, requestDto, token);
+    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long id,
+                                                      @RequestHeader("Authorization") String token,
+                                                      @RequestBody PostRequestDto requestDto) {
+         PostResponseDto responseDto = postService.updatePost(id, requestDto, token);
+         return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/post/{id}")
-    public String deletePost(@PathVariable Long id) {
-        return postService.deletePost(id);
+    public ResponseEntity<?> deletePost(@PathVariable Long id,
+                                        @RequestHeader("Authorization") String token,
+                                        @RequestBody PostRequestDto requestDto) {
+        postService.deletePost(id, token, requestDto);
+        return ResponseEntity.status(HttpStatus.OK).body("게시글이 삭제 되었습니다.");
     }
 }

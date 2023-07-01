@@ -1,11 +1,9 @@
 package com.sparta.post.service;
 
-import com.sparta.post.dto.LoginRequestDto;
 import com.sparta.post.dto.UserRequestDto;
 import com.sparta.post.entity.User;
 import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.repository.UserRepository;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,7 +35,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public String login(LoginRequestDto requestDto, HttpServletResponse res) {
+    public String login(UserRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password = requestDto.getPassword();
 
@@ -51,7 +49,7 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        // JWT 생성 및 쿠키에 저장 후 Response 객체에 추가
+        // JWT 생성
         return jwtUtil.createToken(username);
     }
 
