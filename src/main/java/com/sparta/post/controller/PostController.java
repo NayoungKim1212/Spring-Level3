@@ -36,13 +36,13 @@ public class PostController {
         return postService.getPost(id);
     }
 
-//    @PutMapping("/post/{id}")
-//    public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto) {
-//        return postService.updatePost(id, requestDto);
-//    }
+    @PutMapping("/post/{id}")
+    public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, String token) {
+        return postService.updatePost(id, requestDto, token);
+    }
 
-//    @DeleteMapping("/post/{id}")
-//    public String deletePost(@PathVariable Long id) {
-//        return postService.deletePost(id);
-//    }
+    @DeleteMapping("/post/{id}")
+    public String deletePost(@PathVariable Long id) {
+        return postService.deletePost(id);
+    }
 }

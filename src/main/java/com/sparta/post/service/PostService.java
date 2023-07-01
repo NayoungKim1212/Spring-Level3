@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -22,7 +23,7 @@ public class PostService {
         String substringToken = jwtUtil.substringToken(token);
         boolean isTokenValid = jwtUtil.validateToken(substringToken);
 
-        if(isTokenValid) {
+        if (isTokenValid) {
             Post post = new Post(requestDto);
             Post savePost = postRepository.save(post);
             return new PostResponseDto(post);
@@ -39,32 +40,30 @@ public class PostService {
     }
 
     public PostResponseDto getPost(Long id) {
-            return new PostResponseDto(findPost(id));
+        return new PostResponseDto(findPost(id));
     }
 
-//    @Transactional
-//    public PostResponseDto updatePost(Long id, PostRequestDto requestDto) {
-//
-//        Post post = findPost(id);
-//        // 만약 post의 getpassword와 requestDto의 getpassword가 같으면
-//        if()) {
-//            post.update(requestDto);
-//        }
-//        return new PostResponseDto(post);
-//
-//    }
-//
-//    public String deletePost(Long id, String password) {
-//
-//        Post post = findPost(id);
-//        if(post.getPassword().equals(password)) {
-//            postRepository.delete(post);
-//            return "success";
-//
-//        }else {
-//            return "Error";
-//        }
-//    }
+    @Transactional
+    public PostResponseDto updatePost(Long id, PostRequestDto requestDto, String token) {
+
+        String substringToken = jwtUtil.substringToken(token);
+        boolean isTokenValid = jwtUtil.validateToken(substringToken);
+        Post post = findPost(id);
+
+        if (isTokenValid) {
+            post.update(requestDto);
+            return new PostResponseDto(post);
+        }
+        return null;
+    }
+
+    public String deletePost(Long id, String password) {
+
+        Post post = findPost(id);
+        return "Error";
+    }
+
+}
 
     private Post findPost(Long id) {
         return postRepository.findById(id).orElseThrow(() ->
