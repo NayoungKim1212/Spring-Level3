@@ -2,8 +2,11 @@ package com.sparta.post.controller;
 
 import com.sparta.post.dto.PostRequestDto;
 import com.sparta.post.dto.PostResponseDto;
+import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,28 +19,30 @@ public class PostController {
 
     // 게시글 작성
     @PostMapping("/post")
-    public PostResponseDto createPost(@RequestHeader("Authorization") String token,
+    public ResponseEntity<?> createPost(@RequestHeader("Authorization") String token,
                                       @RequestBody PostRequestDto requestDto) {
-        PostResponseDto postResponseDto = postService.createPost(token, requestDto);
-  //      return postService.createPost(token, requestDto);
+        PostResponseDto responseDto = postService.createPost(token, requestDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
+
+    // 전체 게시글 조회
     @GetMapping("/post")
     public List<PostResponseDto> getPosts() {
         return postService.getPosts();
     }
 
     @GetMapping("/post/{id}")
-    public PostResponseDto getPostsById(@PathVariable Long id) {
-        return postService.getPostById(id);
+    public PostResponseDto getPost(@PathVariable Long id) {
+        return postService.getPost(id);
     }
 
     @PutMapping("/post/{id}")
-    public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto) {
-        return postService.updatePost(id, requestDto);
+    public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, String token) {
+        return postService.updatePost(id, requestDto, token);
     }
 
     @DeleteMapping("/post/{id}")
-    public String deletePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto) {
-        return postService.deletePost(id, requestDto.getPassword());
+    public String deletePost(@PathVariable Long id) {
+        return postService.deletePost(id);
     }
 }
