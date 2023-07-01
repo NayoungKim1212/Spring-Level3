@@ -9,9 +9,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class User extends Timestamped{
+public class User{
     @Id
-//    @Column(name = "user_id")
+    @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -21,10 +21,8 @@ public class User extends Timestamped{
     @Column(nullable = false)
     private String password;
 
-
     public User(String username, String password) {
         this.username = username;
         this.password = password;
     }
-
 }
