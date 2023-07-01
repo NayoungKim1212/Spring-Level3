@@ -54,12 +54,14 @@ public class PostService {
         }
     }
 
-    public PostResponseDto deletePost(Long id, String token, PostRequestDto requestDto) {
+    public void deletePost(Long id) {
         Post post = findPost(id);
-        if (isTokenValid(token, post)) {
+        String username = getUsername();
+        if(username.equals(post.getUsername())) {
             postRepository.delete(post);
+        } else {
+            throw  new IllegalArgumentException("잘못된 사용자입니다.");
         }
-        return new PostResponseDto(post);
     }
 
     private Post findPost(Long id) {

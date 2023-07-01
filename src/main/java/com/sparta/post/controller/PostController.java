@@ -43,10 +43,8 @@ public class PostController {
     }
 
     @DeleteMapping("/post/{id}")
-    public ResponseEntity<?> deletePost(@PathVariable Long id,
-                                        @RequestHeader("Authorization") String token,
-                                        @RequestBody PostRequestDto requestDto) {
-        postService.deletePost(id, token, requestDto);
+    public ResponseEntity<?> deletePost(@PathVariable Long id) {
+        postService.deletePost(id);
         return ResponseEntity.status(HttpStatus.OK).body("게시글이 삭제 되었습니다.");
     }
 }
