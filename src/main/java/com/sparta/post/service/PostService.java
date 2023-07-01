@@ -8,6 +8,8 @@ import com.sparta.post.repository.PostRepository;
 import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,16 +22,12 @@ public class PostService {
 
     private final JwtUtil jwtUtil;
 
-    public PostResponseDto createPost(String token, PostRequestDto requestDto) {
-        String substringToken = jwtUtil.substringToken(token);
-        boolean isTokenValid = jwtUtil.validateToken(substringToken);
-
-        if (isTokenValid) {
-            Post post = new Post(requestDto);
-            Post savePost = postRepository.save(post);
-            return new PostResponseDto(post);
-        }
-        return null;
+    public PostResponseDto createPost(PostRequestDto requestDto) {
+        String username = getUsername();
+        Post post = new Post(requestDto, username);
+        System.out.println("username = " + username);
+        postRepository.save(post);
+        return new PostResponseDto(post);
     }
 
     public List<PostResponseDto> getPosts() {
@@ -95,6 +93,17 @@ public class PostService {
         Claims info = jwtUtil.getUserInfoFromToken(token);
         String username = info.getSubject();
         return username;
+    }
+
+    public String getUsername() {
+        System.out.println("이름 받아오는중");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); // SecurityContextHolder내부에 SecurityContext내부에 있는 Authentication을 받아옴
+        System.out.println("authentication = " + authentication);
+        System.out.println("authentication.getName() = " + authentication.getName());
+        if (authentication != null) {
+            return authentication.getName(); // Authentication에서 이름을 받아온다.
+        }
+        return null;
     }
 }
 

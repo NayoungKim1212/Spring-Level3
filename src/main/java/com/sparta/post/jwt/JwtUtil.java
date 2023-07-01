@@ -98,20 +98,4 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
-
-//    public String getTokenFromRequest(HttpServletRequest req) {
-//        Cookie[] cookies = req.getCookies(); // 여러개의 쿠키를 배열에 담음
-//        if(cookies != null) {
-//            for (Cookie cookie : cookies) {
-//                if (cookie.getName().equals(AUTHORIZATION_HEADER)) { // 여러개의 쿠키들 중, AUTHORIZATION_HEADER 와 이름이 일치하는 쿠키를 찾음
-//                    try {
-//                        return URLDecoder.decode(cookie.getValue(), "UTF-8"); // Encode 되어 넘어간 Value 다시 Decode (=쿠키에 들어있는 jwt 값 반환)
-//                    } catch (UnsupportedEncodingException e) {
-//                        return null;
-//                    }
-//                }
-//            }
-//        }
-//        return null;
-//    }
 }

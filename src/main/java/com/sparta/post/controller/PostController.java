@@ -18,10 +18,9 @@ public class PostController {
     private final PostService postService;
 
     // 게시글 작성
-    @PostMapping("/post")
-    public ResponseEntity<?> createPost(@RequestHeader("Authorization") String token, // 헤더에 "Authorization" 필드로 토큰을 전달받음
-                                      @RequestBody PostRequestDto requestDto) {
-        PostResponseDto responseDto = postService.createPost(token, requestDto);
+    @PostMapping("/post") // @RequestHeader("Authorization") String token, // 헤더에 "Authorization" 필드로 토큰을 전달받음 -> Spring Security로 인가, 인증을해서 authentication에서 name을 가겨온다.
+    public ResponseEntity<?> createPost(@RequestBody PostRequestDto requestDto) {
+        PostResponseDto responseDto = postService.createPost(requestDto);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
