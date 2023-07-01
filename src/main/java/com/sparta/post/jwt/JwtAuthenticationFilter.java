@@ -54,7 +54,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 //        UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole(); // UserRole 가져오기
 
         String token = jwtUtil.createToken(username); // Username 을 포함하느 토큰 만들기
-        jwtUtil.addJwtToCookie(token, response); // 토큰을 쿠키로 만들어서 response 에 보냄
+        // 쿠키에 안담고 토큰만 보내기 // 헤더에 보내기
+        response.setHeader(jwtUtil.AUTHORIZATION_HEADER, token);
     }
 
     @Override

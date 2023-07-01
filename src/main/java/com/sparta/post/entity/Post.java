@@ -15,8 +15,8 @@ public class Post extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "username", nullable = false)
-    private String username;
+//    @Column(name = "username", nullable = false)
+//    private String username;
     @Column(name = "contents", nullable = false)
     private String contents;
     @Column(name = "title", nullable = false)
@@ -25,7 +25,7 @@ public class Post extends Timestamped {
 
 
     public Post(PostRequestDto requestDto) {
-        this.username = requestDto.getUsername();
+//        this.username = requestDto.getUsername();
         this.contents = requestDto.getContents();
         this.title = requestDto.getTitle();
     }
