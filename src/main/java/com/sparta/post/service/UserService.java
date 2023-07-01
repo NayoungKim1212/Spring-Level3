@@ -35,7 +35,22 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // 사용자 확인
+    public String login(UserRequestDto requestDto) {
+        String username = requestDto.getUsername();
+        String password = requestDto.getPassword();
 
+        // 사용자 확인
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
+        );
+
+        // 비밀번호 확인
+        if(!passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // JWT 생성
+        return jwtUtil.createToken(username);
+    }
 
 }
