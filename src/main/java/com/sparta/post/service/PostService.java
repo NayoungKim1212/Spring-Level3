@@ -43,17 +43,15 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponseDto updatePost(Long id, PostRequestDto requestDto, String token) {
-
-        String substringToken = jwtUtil.substringToken(token);
-        boolean isTokenValid = jwtUtil.validateToken(substringToken);
+    public PostResponseDto updatePost(Long id, PostRequestDto requestDto) {
         Post post = findPost(id);
-
-        if (isTokenValid) {
+        String username = getUsername();
+        if(username.equals(post.getUsername())) {
             post.update(requestDto);
             return new PostResponseDto(post);
+        }else {
+            throw  new IllegalArgumentException("잘못된 사용자입니다.");
         }
-        return null;
     }
 
     public PostResponseDto deletePost(Long id, String token, PostRequestDto requestDto) {
@@ -69,11 +67,12 @@ public class PostService {
                 new IllegalArgumentException("헤당 게시물은 존재하지 않습니다.")
         );
     }
+
     private boolean isTokenValid(String token, Post post) {
 
         String username = getUsernameFromJwt(token);
 
-        if(username.equals(post.getUsername())) {
+        if (username.equals(post.getUsername())) {
             return true;
         }
         return false;
