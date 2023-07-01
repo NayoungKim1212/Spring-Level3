@@ -2,7 +2,6 @@ package com.sparta.post.controller;
 
 import com.sparta.post.dto.PostRequestDto;
 import com.sparta.post.dto.PostResponseDto;
-import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,17 +36,14 @@ public class PostController {
 
     @PutMapping("/post/{id}")
     public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long id,
-                                                      @RequestHeader("Authorization") String token,
                                                       @RequestBody PostRequestDto requestDto) {
-         PostResponseDto responseDto = postService.updatePost(id, requestDto, token);
+         PostResponseDto responseDto = postService.updatePost(id, requestDto);
          return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/post/{id}")
-    public ResponseEntity<?> deletePost(@PathVariable Long id,
-                                        @RequestHeader("Authorization") String token,
-                                        @RequestBody PostRequestDto requestDto) {
-        postService.deletePost(id, token, requestDto);
+    public ResponseEntity<?> deletePost(@PathVariable Long id) {
+        postService.deletePost(id);
         return ResponseEntity.status(HttpStatus.OK).body("게시글이 삭제 되었습니다.");
     }
 }
