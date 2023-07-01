@@ -9,9 +9,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class User extends Timestamped{
+public class User{
     @Id
-//    @Column(name = "user_id")
+    @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -21,14 +21,12 @@ public class User extends Timestamped{
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    @Enumerated(value = EnumType.STRING) // Enum type을 DB column 에 저장할 때 사용
-    private UserRoleEnum role;
+//    @Column(nullable = false)
+//    @Enumerated(value = EnumType.STRING) // Enum type을 DB column 에 저장할 때 사용
+//    private UserRoleEnum role;
 
-    public User(String username, String password, UserRoleEnum role) {
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
-        this.role = role;
     }
-
 }

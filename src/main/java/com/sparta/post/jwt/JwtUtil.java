@@ -1,9 +1,12 @@
 package com.sparta.post.jwt;
 
+import com.sparta.post.entity.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -43,13 +49,28 @@ public class JwtUtil {
     public String createToken(String username) {
         Date date = new Date();
 
-        return BEARER_PREFIX +
+        return BEARER_PREFIX + // "bearer "을 앞에 붙여줌
                 Jwts.builder()
-                        .setSubject(username) // 사용자 식별자값(ID)
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
+                        .setSubject(username) // 사용자 식별자값(ID) // -> Username 대신 user_id 가 들어가는게 더 좋을듯(정보 노출 줄일려고) 비슷한가?
+                        .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간 ((현재시간) + 만료시간)
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                         .compact();
+    }
+
+    // JWT를 Cookie에 저장
+    public void addJwtToCookie(String token, HttpServletResponse res) {
+        try {
+            token = URLEncoder.encode(token, "utf-8").replaceAll("\\+", "%20"); // 앞에 붙여둔 "bearer "을 인코딩하면 공백이 +로 인코딩됨, + -> %20으로 바꿔줌 // 공백은 %20으로 바꿔주는게 URL 인코딩의 약속이다.
+
+            Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token); // Cookie: Name-Value
+            cookie.setPath("/"); // Cookie의 URL 유효범위설정 ("/"): 전역
+
+            // Response 객체에 Cookie 추가
+            res.addCookie(cookie);
+        } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage());
+        }
     }
 
     // JWT 토큰 substring(Cookie에 들어있던 JWT 토큰을 Substring)
@@ -61,6 +82,7 @@ public class JwtUtil {
         logger.error("Not Found Token");
         throw new NullPointerException("Not Found Token");
     }
+
     // 토큰 검증(JWT 검증)
     public boolean validateToken(String token) {
         try {
@@ -81,5 +103,21 @@ public class JwtUtil {
     // 토큰에서 사용자 정보 가져오기(JWT에서 사용자 정보 가져오기)
     public Claims getUserInfoFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    }
+
+    public String getTokenFromRequest(HttpServletRequest req) {
+        Cookie[] cookies = req.getCookies(); // 여러개의 쿠키를 배열에 담음
+        if(cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(AUTHORIZATION_HEADER)) { // 여러개의 쿠키들 중, AUTHORIZATION_HEADER 와 이름이 일치하는 쿠키를 찾음
+                    try {
+                        return URLDecoder.decode(cookie.getValue(), "UTF-8"); // Encode 되어 넘어간 Value 다시 Decode (=쿠키에 들어있는 jwt 값 반환)
+                    } catch (UnsupportedEncodingException e) {
+                        return null;
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

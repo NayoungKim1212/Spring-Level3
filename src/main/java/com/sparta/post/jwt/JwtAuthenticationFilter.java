@@ -22,16 +22,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
-        log.info("중간점검");
         this.jwtUtil = jwtUtil;
         setFilterProcessesUrl("/api/auth/login"); // 설정한 url 로 들어올때 작동함 default 값은 /login
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException{
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        log.info("로그인 시도");
         try {
             LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class); // request 의 request body 부분을 LoginRequestDto 객체로 만들어줌
-
+            System.out.println(requestDto.getUsername());
+            System.out.println("requestDto.getPassword() = " + requestDto.getPassword());
             return getAuthenticationManager().authenticate( // manager 가 인증처리하는 메서드
                     new UsernamePasswordAuthenticationToken( // manager 가 인증에 사용할 토큰을 주는 과정
                             requestDto.getUsername(),
@@ -46,12 +47,19 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    protected  void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException{
+    // AuthenticationManager 가 인증에 성공하면 자동으로 호출되는 메서드
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         log.info("로그인 성공 및 JWT 생성");
-        String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
-        UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
+        String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername(); // Authentication(인증된 사용자)의 Principal(사용자를 식별, UserDetails)에서 Username 가져오기
+//        UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole(); // UserRole 가져오기
 
-        String token = jwtUtil.createToken(username, role);
-        jwtUtil.addJwtToCookie(token, response);
+        String token = jwtUtil.createToken(username); // Username 을 포함하느 토큰 만들기
+        jwtUtil.addJwtToCookie(token, response); // 토큰을 쿠키로 만들어서 response 에 보냄
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        log.info("로그인 실패");
+        response.setStatus(401); // 인증이되지 않았다.
     }
 }
