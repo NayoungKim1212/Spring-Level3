@@ -22,7 +22,7 @@ public class PostController {
     public ResponseEntity<?> createPost(@RequestHeader("Authorization") String token,
                                       @RequestBody PostRequestDto requestDto) {
         PostResponseDto responseDto = postService.createPost(token, requestDto);
-        return new ResponseEntity<>(responseDto, HttpStatus.CREATED)
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     // 전체 게시글 조회
@@ -32,17 +32,17 @@ public class PostController {
     }
 
     @GetMapping("/post/{id}")
-    public PostResponseDto getPostsById(@PathVariable Long id) {
-        return postService.getPostById(id);
+    public PostResponseDto getPost(@PathVariable Long id) {
+        return postService.getPost(id);
     }
 
-    @PutMapping("/post/{id}")
-    public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto) {
-        return postService.updatePost(id, requestDto);
-    }
+//    @PutMapping("/post/{id}")
+//    public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto) {
+//        return postService.updatePost(id, requestDto);
+//    }
 
-    @DeleteMapping("/post/{id}")
-    public String deletePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto) {
-        return postService.deletePost(id, requestDto.getPassword());
-    }
+//    @DeleteMapping("/post/{id}")
+//    public String deletePost(@PathVariable Long id) {
+//        return postService.deletePost(id);
+//    }
 }
