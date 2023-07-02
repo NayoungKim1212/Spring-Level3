@@ -31,7 +31,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter { // HttpServle
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
 
-        String tokenValue = jwtUtil.getTokenFromRequest(req);
+        String tokenValue = req.getHeader(jwtUtil.AUTHORIZATION_HEADER);
 
         if (StringUtils.hasText(tokenValue)) {
             // JWT 토큰 substring
@@ -46,13 +46,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter { // HttpServle
             Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
 
             try {
-                setAuthentication(info.getSubject()); // subject 에 유저이름 들어가있음, 이름받아오기
+                setAuthentication(info.getSubject()); // subject에 유저이름 들어가있음, 이름받아서 Authentication에 저장
             } catch (Exception e) {
                 log.error(e.getMessage());
                 return;
             }
         }
-
         filterChain.doFilter(req, res);
     }
 

@@ -1,27 +1,22 @@
 package com.sparta.post.jwt;
 
-import com.sparta.post.entity.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
 @Component
+@Getter
 public class JwtUtil {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     // 사용자 권한 값의 KEY
@@ -96,20 +91,4 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
-
-//    public String getTokenFromRequest(HttpServletRequest req) {
-//        Cookie[] cookies = req.getCookies(); // 여러개의 쿠키를 배열에 담음
-//        if(cookies != null) {
-//            for (Cookie cookie : cookies) {
-//                if (cookie.getName().equals(AUTHORIZATION_HEADER)) { // 여러개의 쿠키들 중, AUTHORIZATION_HEADER 와 이름이 일치하는 쿠키를 찾음
-//                    try {
-//                        return URLDecoder.decode(cookie.getValue(), "UTF-8"); // Encode 되어 넘어간 Value 다시 Decode (=쿠키에 들어있는 jwt 값 반환)
-//                    } catch (UnsupportedEncodingException e) {
-//                        return null;
-//                    }
-//                }
-//            }
-//        }
-//        return null;
-//    }
 }
