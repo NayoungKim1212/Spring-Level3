@@ -54,11 +54,16 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String token = jwtUtil.createToken(username); // Username 을 포함하느 토큰 만들기
         // 쿠키에 안담고 토큰만 보내기 // 헤더에 보내기
         response.setHeader(jwtUtil.AUTHORIZATION_HEADER, token);
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("로그인 성공");
+        response.setStatus(200);
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         log.info("로그인 실패");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("로그인 실패");
         response.setStatus(401); // 인증이되지 않았다.
     }
 }
