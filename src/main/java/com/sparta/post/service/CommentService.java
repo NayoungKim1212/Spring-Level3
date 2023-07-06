@@ -37,13 +37,22 @@ public class CommentService {
     }
 
     @Transactional
-    public ResponseEntity<CommentResponseDto> updateComment(Long id, String tokenValue, CommentRequestDto requestDto) {
+    public ResponseEntity<CommentResponseDto> updateComment(String tokenValue, Long id, CommentRequestDto requestDto) {
         String token = authentication(tokenValue);
         String username = getUsernameFromToken(token);
-        Comment comment = commentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글 입니다."));
+        Comment comment = findComment(id);
         usernameMatch(username, comment.getUser().getUsername());
         comment.update(requestDto);
         return new ResponseEntity<>(new CommentResponseDto(comment), HttpStatus.OK);
+    }
+
+    public ResponseEntity<String> deleteComment(String tokenValue, Long id) {
+        String token = authentication(tokenValue);
+        String username = getUsernameFromToken(token);
+        Comment comment = findComment(id);
+        usernameMatch(username, comment.getUser().getUsername());
+        commentRepository.delete(comment);
+        return new ResponseEntity<>("댓글이 삭제 되었습니다.",HttpStatus.OK);
     }
 
     private String authentication(String tokenValue) {
@@ -54,6 +63,12 @@ public class CommentService {
             throw new IllegalArgumentException("인증되지 않은 토큰입니다.");
         }
         return token;
+    }
+
+    private Comment findComment(Long id) {
+        System.out.println("댓글 찾기");
+        return commentRepository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("존재하지 않는 댓글 입니다."));
     }
 
     private void usernameMatch(String loginUsername, String commentUsername) {
