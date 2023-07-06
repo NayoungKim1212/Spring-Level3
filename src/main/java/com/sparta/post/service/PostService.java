@@ -3,8 +3,10 @@ package com.sparta.post.service;
 import com.sparta.post.dto.PostRequestDto;
 import com.sparta.post.dto.PostResponseDto;
 import com.sparta.post.entity.Post;
+import com.sparta.post.entity.User;
 import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.repository.PostRepository;
+import com.sparta.post.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,11 +23,14 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
     public ResponseEntity<PostResponseDto> createPost(String tokenValue, PostRequestDto requestDto) {
         String token = authentication(tokenValue);
-        String username = getUsernameFromJwt(token);
-        Post post = new Post(requestDto, username);
+        String username = getUsernameFromJwt(token); // 보안, 확장성 // jwt이 노출됐을때 위험
+        User user = userRepository.findByUsername(username).orElseThrow(() ->
+                new IllegalArgumentException("없는 사용자 입니다."));
+        Post post = new Post(requestDto, user);
         postRepository.save(post);
         return new ResponseEntity<>(new PostResponseDto(post), HttpStatus.OK);
     }
@@ -46,7 +52,7 @@ public class PostService {
         Post post = findPost(id);
         String token = authentication(tokenValue);
         String username = getUsernameFromJwt(token);
-        usernameMatch(username, post.getUsername());
+        usernameMatch(username, post.getUser().getUsername());
         post.update(requestDto);
         return new ResponseEntity<>(new PostResponseDto(post), HttpStatus.OK);
     }
@@ -55,14 +61,14 @@ public class PostService {
         Post post = findPost(id);
         String token = authentication(tokenValue);
         String username = getUsernameFromJwt(token);
-        usernameMatch(username, post.getUsername());
+        usernameMatch(username, post.getUser().getUsername());
         postRepository.delete(post);
         return ResponseEntity.status(HttpStatus.OK).body("게시글이 삭제 되었습니다.");
     }
 
     private Post findPost(Long id) {
         return postRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("헤당 게시물은 존재하지 않습니다.")
+                new IllegalArgumentException("헤당 게시물은 존재하지 않습니다.") // 500(서버문제), exceptionHandle(심화) -> status. 400(클라이언트문제) bad.request
         );
     }
 
