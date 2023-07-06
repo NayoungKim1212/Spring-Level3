@@ -1,10 +1,11 @@
 package com.sparta.post.controller;
 
+import com.sparta.post.dto.LoginRequestDto;
 import com.sparta.post.dto.UserRequestDto;
 import com.sparta.post.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,8 +22,11 @@ public class UserController {
 
     @PostMapping("/auth/signup")
     public ResponseEntity<?> signup(@RequestBody @Valid UserRequestDto requestDto) {
-        userService.signup(requestDto);
-        return new ResponseEntity<>("회원 가입 성공", HttpStatus.CREATED);
+        return userService.signup(requestDto);
     }
 
+    @PostMapping("/auth/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto requestDto, HttpServletResponse res) {
+        return userService.login(requestDto, res);
+    }
 }

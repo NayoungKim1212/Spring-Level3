@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -53,6 +57,26 @@ public class JwtUtil {
                         .compact();
     }
 
+    public void addJwtToHeader(String token, HttpServletResponse res) {
+        try {
+            token = URLEncoder.encode(token, "utf-8").replaceAll("\\+", "%20"); // 앞에 붙여둔 "bearer "을 인코딩하면 공백이 +로 인코딩됨, + -> %20으로 바꿔줌 // 공백은 %20으로 바꿔주는게 URL 인코딩의 약속이다.
+
+            res.setHeader(AUTHORIZATION_HEADER, token);
+
+        } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    public String decodingToken(String tokenValue) {
+        try {
+            String a = URLDecoder.decode(tokenValue,"utf-8");
+            System.out.println("a = " + a);
+            return a;
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     // JWT 토큰 substring(Cookie에 들어있던 JWT 토큰을 Substring)
     public String substringToken(String tokenValue) {
