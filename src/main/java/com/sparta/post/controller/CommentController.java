@@ -19,4 +19,11 @@ public class CommentController {
                                                             @RequestBody CommentRequestDto requestDto){
         return commentService.createComment(token, requestDto);
     }
+
+    @PutMapping("/comment/{id}")
+    public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long id,
+                                                            @RequestHeader(name = AUTHORIZATION_HEADER) String token,
+                                                            @RequestBody CommentRequestDto requestDto){
+        return commentService.updateComment(id, token, requestDto);
+    }
 }
