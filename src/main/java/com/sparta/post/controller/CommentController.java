@@ -21,9 +21,15 @@ public class CommentController {
     }
 
     @PutMapping("/comment/{id}")
-    public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long id,
-                                                            @RequestHeader(name = AUTHORIZATION_HEADER) String token,
+    public ResponseEntity<CommentResponseDto> updateComment(@RequestHeader(name = AUTHORIZATION_HEADER) String token,
+                                                            @PathVariable Long id,
                                                             @RequestBody CommentRequestDto requestDto){
-        return commentService.updateComment(id, token, requestDto);
+        return commentService.updateComment(token, id, requestDto);
+    }
+
+    @DeleteMapping("/comment/{id}")
+    public ResponseEntity<String> deleteComment(@RequestHeader(name = AUTHORIZATION_HEADER) String token,
+                                                @PathVariable Long id){
+        return commentService.deleteComment(token, id);
     }
 }
