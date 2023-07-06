@@ -4,7 +4,6 @@ import com.sparta.post.dto.PostRequestDto;
 import com.sparta.post.dto.PostResponseDto;
 import com.sparta.post.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,10 +16,10 @@ public class PostController {
     private final PostService postService;
 
     // 게시글 작성
-    @PostMapping("/post") // @RequestHeader("Authorization") String token, // 헤더에 "Authorization" 필드로 토큰을 전달받음 -> Spring Security로 인가, 인증을해서 authentication에서 name을 가겨온다.
-    public ResponseEntity<?> createPost(@RequestBody PostRequestDto requestDto) {
-        PostResponseDto responseDto = postService.createPost(requestDto);
-        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    @PostMapping("/post")
+    public ResponseEntity<PostResponseDto> createPost(@RequestHeader("Authorization") String token,
+                                        @RequestBody PostRequestDto requestDto) {
+        return postService.createPost(token, requestDto);
     }
 
     // 전체 게시글 조회
@@ -35,15 +34,15 @@ public class PostController {
     }
 
     @PutMapping("/post/{id}")
-    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long id,
+    public ResponseEntity<PostResponseDto> updatePost(@RequestHeader("Authorization") String token,
+                                                      @PathVariable Long id,
                                                       @RequestBody PostRequestDto requestDto) {
-         PostResponseDto responseDto = postService.updatePost(id, requestDto);
-         return ResponseEntity.ok(responseDto);
+         return postService.updatePost(token, id, requestDto);
     }
 
     @DeleteMapping("/post/{id}")
-    public ResponseEntity<?> deletePost(@PathVariable Long id) {
-        postService.deletePost(id);
-        return ResponseEntity.status(HttpStatus.OK).body("게시글이 삭제 되었습니다.");
+    public ResponseEntity<?> deletePost(@RequestHeader("Authorization") String token,
+                                        @PathVariable Long id) {
+        return postService.deletePost(token, id);
     }
 }
