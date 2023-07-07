@@ -75,4 +75,12 @@ public class UserService {
                 .build();
         return ResponseEntity.ok(responseDto);
     }
+    private User findUser(String username) {
+        return userRepository.findByUsername(username).orElseThrow(()
+                -> new IllegalArgumentException("등록된 사용자가 없습니다."));
+    }
+
+    private boolean isAdmin(User user) {
+        return user.getRole().equals(UserRoleEnum.ADMIN);
+    }
 }
