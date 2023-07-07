@@ -12,11 +12,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -93,10 +91,5 @@ public class PostService {
         return username;
     }
 
-    private User findUser(String username) {
-        return userRepository.findByUsername(username).orElseThrow(()
-        -> new IllegalArgumentException("등록된 사용자가 없습니다."));
-    }
 }
-
 
