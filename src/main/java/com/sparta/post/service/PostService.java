@@ -4,6 +4,7 @@ import com.sparta.post.dto.PostRequestDto;
 import com.sparta.post.dto.PostResponseDto;
 import com.sparta.post.entity.Post;
 import com.sparta.post.entity.User;
+import com.sparta.post.entity.UserRoleEnum;
 import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.repository.PostRepository;
 import com.sparta.post.repository.UserRepository;
@@ -12,11 +13,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,10 +26,10 @@ public class PostService {
     private final UserRepository userRepository;
 
     public ResponseEntity<PostResponseDto> createPost(String tokenValue, PostRequestDto requestDto) {
-        String token = authentication(tokenValue);
-        String username = getUsernameFromJwt(token); // 보안, 확장성 // jwt이 노출됐을때 위험
+        Claims info = authentication(tokenValue); // 토큰 인증 및 사용자 정보 반환
+        String username = info.getSubject();
         User user = userRepository.findByUsername(username).orElseThrow(() ->
-                new IllegalArgumentException("없는 사용자 입니다."));
+                new IllegalArgumentException("존재하지 않는 사용자 입니다."));
         Post post = new Post(requestDto, user);
         postRepository.save(post);
         return new ResponseEntity<>(new PostResponseDto(post), HttpStatus.OK);
@@ -50,26 +49,51 @@ public class PostService {
 
     @Transactional
     public ResponseEntity<PostResponseDto> updatePost(String tokenValue, Long id, PostRequestDto requestDto) {
+        Claims info = authentication(tokenValue);
         Post post = findPost(id);
-        String token = authentication(tokenValue);
-        String username = getUsernameFromJwt(token);
+        if(hasRoleAdmin(info)){ // 관리자 권한인지 확인
+            post.update(requestDto);
+            return new ResponseEntity<>(new PostResponseDto(post), HttpStatus.OK);
+        }
+        String username = info.getSubject();
         usernameMatch(username, post.getUser().getUsername());
         post.update(requestDto);
         return new ResponseEntity<>(new PostResponseDto(post), HttpStatus.OK);
     }
 
     public ResponseEntity<?> deletePost(String tokenValue, Long id) {
+        Claims info = authentication(tokenValue);
         Post post = findPost(id);
-        String token = authentication(tokenValue);
-        String username = getUsernameFromJwt(token);
+        if(hasRoleAdmin(info)){
+            postRepository.delete(post);
+            return ResponseEntity.status(HttpStatus.OK).body("게시글이 삭제 되었습니다.");
+        }
+        String username = info.getSubject();
         usernameMatch(username, post.getUser().getUsername());
         postRepository.delete(post);
         return ResponseEntity.status(HttpStatus.OK).body("게시글이 삭제 되었습니다.");
     }
+    private Claims authentication(String tokenValue) {
+        System.out.println("토큰 인증 및 사용자 정보 반환");
+        String decodedToken = jwtUtil.decodingToken(tokenValue);
+        String token = jwtUtil.substringToken(decodedToken);
+        if (!jwtUtil.validateToken(token)) {
+            throw new IllegalArgumentException("인증되지 않은 토큰입니다.");
+        }
+        return jwtUtil.getUserInfoFromToken(token);
+    }
+
+    private boolean hasRoleAdmin(Claims info) {
+        System.out.println("권한 확인중");
+        if (info.get(jwtUtil.AUTHORIZATION_KEY).equals(UserRoleEnum.ADMIN)) { // UserRoleEnum.ADMIN.getAuthority()) == "ROLE_ADMIN"
+            return true;
+        }
+        return false;
+    }
 
     private Post findPost(Long id) {
         return postRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("헤당 게시물은 존재하지 않습니다.") // 500(서버문제), exceptionHandle(심화) -> status. 400(클라이언트문제) bad.request
+                new IllegalArgumentException("헤당 게시물은 존재하지 않습니다.")
         );
     }
 
@@ -77,25 +101,6 @@ public class PostService {
         if (!loginUsername.equals(postUsername)){
             throw new IllegalArgumentException("잘못된 사용자입니다.");
         }
-    }
-
-    private String authentication(String tokenValue) { // 유효한 토큰인지 확인하고 토큰 반환
-        String decodedToken = jwtUtil.decodingToken(tokenValue);
-        String token = jwtUtil.substringToken(decodedToken);
-        if (!jwtUtil.validateToken(token)) {
-            throw new IllegalArgumentException("Token Error");
-        }
-        return token;
-    }
-    private String getUsernameFromJwt(String token) { // 토큰에서 사용자 정보 가져오기
-        Claims info = jwtUtil.getUserInfoFromToken(token);
-        String username = info.getSubject();
-        return username;
-    }
-
-    private User findUser(String username) {
-        return userRepository.findByUsername(username).orElseThrow(()
-        -> new IllegalArgumentException("등록된 사용자가 없습니다."));
     }
 }
 
