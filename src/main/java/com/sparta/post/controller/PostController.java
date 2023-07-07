@@ -2,6 +2,7 @@ package com.sparta.post.controller;
 
 import com.sparta.post.dto.PostRequestDto;
 import com.sparta.post.dto.PostResponseDto;
+import com.sparta.post.dto.PostWithCommentResponseDto;
 import com.sparta.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class PostController {
     }
 
     @GetMapping("/post/{id}")
-    public PostResponseDto getPost(@PathVariable Long id) {
+    public PostWithCommentResponseDto getPost(@PathVariable Long id) {
         return postService.getPost(id);
     }
 
