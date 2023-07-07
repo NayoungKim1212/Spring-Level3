@@ -1,5 +1,6 @@
 package com.sparta.post.jwt;
 
+import com.sparta.post.entity.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -45,12 +46,13 @@ public class JwtUtil {
     }
 
     // 토큰 생성(JWT 생성)
-    public String createToken(String username) {
+    public String createToken(String username, UserRoleEnum role) {
         Date date = new Date();
 
         return BEARER_PREFIX + // "bearer "을 앞에 붙여줌
                 Jwts.builder()
                         .setSubject(username) // 사용자 식별자값(ID) // -> Username 대신 user_id 가 들어가는게 더 좋을듯(정보 노출 줄일려고) 비슷한가?
+                        .claim(AUTHORIZATION_KEY, role) // 사용자 권한 claim(key, value)
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간 ((현재시간) + 만료시간)
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
