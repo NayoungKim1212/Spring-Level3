@@ -72,9 +72,7 @@ public class JwtUtil {
 
     public String decodingToken(String tokenValue) {
         try {
-            String a = URLDecoder.decode(tokenValue,"utf-8");
-            System.out.println("a = " + a);
-            return a;
+            return URLDecoder.decode(tokenValue,"utf-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }

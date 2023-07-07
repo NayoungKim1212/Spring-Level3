@@ -13,11 +13,13 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler({IllegalArgumentException.class})
     public ResponseEntity<String> handlerException(IllegalArgumentException ex) {
+        System.out.println("여기로 잡힘!");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     @ExceptionHandler({MissingRequestHeaderException.class})
     public ResponseEntity<String> handlerException(MissingRequestHeaderException ex) {
+        System.out.println("헤더 없음!");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("토큰이 유효하지 않습니다.");
     }
 }
