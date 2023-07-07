@@ -6,7 +6,7 @@ POST http://localhost:8080/api/auth/signup
 Content-Type: application/json
 
 {
-  "username": "kang4",
+  "username": "kang3",
   "password": "Aa123456!"
 }
 
@@ -15,47 +15,47 @@ POST http://localhost:8080/api/auth/login
 Content-Type: application/json
 
 {
-  "username":"kang4",
-  "password": "Aa123456"
+  "username":"kang2",
+  "password": "Aa123456!"
 }
 
 ### 포스트 등록
 POST http://localhost:8080/api/post
-Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nNCIsImV4cCI6MTY4ODcwNjY3NiwiaWF0IjoxNjg4NzAzMDc2fQ.dGAJO8svIT3g1qoDmqs2QQ2_R8cJr_iVwzNqVDEuhQo
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nMiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjg4NzE1ODU3LCJpYXQiOjE2ODg3MTIyNTd9.tS1tWly1951b2KC9bL6CsWGnZJ52VTkKb0gf513gprU
 Content-Type:application/json
 
 {
-  "title" : "ttl12",
-  "contents" : "ctt12"
+  "title" : "ttl15",
+  "contents" : "ctt15"
 }
 
 ### 포스트 수정
-PUT http://localhost:8080/api/post/11
-Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nNCIsImV4cCI6MTY4ODcwNjY3NiwiaWF0IjoxNjg4NzAzMDc2fQ.dGAJO8svIT3g1qoDmqs2QQ2_R8cJr_iVwzNqVDEuhQo
+PUT http://localhost:8080/api/post/1
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nMiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjg4NzE1ODU3LCJpYXQiOjE2ODg3MTIyNTd9.tS1tWly1951b2KC9bL6CsWGnZJ52VTkKb0gf513gprU
 Content-Type: application/json
 
 {
-  "title" : "ttl11수정1",
+  "title" : "ttl1수정1",
   "contents" : "ctt1수정1"
 }
 
 ### 포스트 삭제
 DELETE http://localhost:8080/api/post/11
-Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nNCIsImV4cCI6MTY4ODcwNjY3NiwiaWF0IjoxNjg4NzAzMDc2fQ.dGAJO8svIT3g1qoDmqs2QQ2_R8cJr_iVwzNqVDEuhQo
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nMiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjg4NzE1ODU3LCJpYXQiOjE2ODg3MTIyNTd9.tS1tWly1951b2KC9bL6CsWGnZJ52VTkKb0gf513gprU
 
 ### 코멘트 등록
 POST http://localhost:8080/api/comment
-Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nNCIsImV4cCI6MTY4ODcwNjY3NiwiaWF0IjoxNjg4NzAzMDc2fQ.dGAJO8svIT3g1qoDmqs2QQ2_R8cJr_iVwzNqVDEuhQo
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nMiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjg4NzE1ODU3LCJpYXQiOjE2ODg3MTIyNTd9.tS1tWly1951b2KC9bL6CsWGnZJ52VTkKb0gf513gprU
 Content-Type:application/json
 
 {
-  "postId" : 11,
-  "comment" : "cmt17"
+  "postId" : 1,
+  "comment" : "cmt1"
 }
 
 ### 코멘트 수정
 PUT http://localhost:8080/api/comment/15
-Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nNCIsImV4cCI6MTY4ODcwNjY3NiwiaWF0IjoxNjg4NzAzMDc2fQ.dGAJO8svIT3g1qoDmqs2QQ2_R8cJr_iVwzNqVDEuhQo
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nMiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjg4NzE1ODU3LCJpYXQiOjE2ODg3MTIyNTd9.tS1tWly1951b2KC9bL6CsWGnZJ52VTkKb0gf513gprU
 Content-Type: application/json
 
 {
@@ -64,4 +64,4 @@ Content-Type: application/json
 
 ### 코멘트 삭제
 DELETE http://localhost:8080/api/comment/15
-Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nNCIsImV4cCI6MTY4ODcwNjY3NiwiaWF0IjoxNjg4NzAzMDc2fQ.dGAJO8svIT3g1qoDmqs2QQ2_R8cJr_iVwzNqVDEuhQo
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nMiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjg4NzE1ODU3LCJpYXQiOjE2ODg3MTIyNTd9.tS1tWly1951b2KC9bL6CsWGnZJ52VTkKb0gf513gprU
