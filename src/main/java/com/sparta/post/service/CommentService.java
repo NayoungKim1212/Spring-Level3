@@ -76,7 +76,7 @@ public class CommentService {
 
     private boolean hasRoleAdmin(Claims info) {
         System.out.println("권한 확인중");
-        if (info.get(jwtUtil.AUTHORIZATION_KEY).equals(UserRoleEnum.ADMIN.getAuthority())) { // UserRoleEnum.ADMIN.getAuthority()) == "ROLE_ADMIN"
+        if (info.get(jwtUtil.AUTHORIZATION_KEY).equals(UserRoleEnum.ADMIN.name())) { // UserRoleEnum.ADMIN.name = "ADMIN"
             return true;
         }
         return false;
