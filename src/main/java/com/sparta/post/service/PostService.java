@@ -88,6 +88,7 @@ public class PostService {
     private String getUsernameFromJwt(String token) { // 토큰에서 사용자 정보 가져오기
         Claims info = jwtUtil.getUserInfoFromToken(token);
         String username = info.getSubject();
+        System.out.println("username = " + username);
         return username;
     }
 
