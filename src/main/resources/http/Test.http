@@ -1,0 +1,67 @@
+### 포스트 조회
+GET http://localhost:8080/api/post
+
+### 회원가입
+POST http://localhost:8080/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "kang4",
+  "password": "Aa123456!"
+}
+
+### 로그인
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username":"kang4",
+  "password": "Aa123456"
+}
+
+### 포스트 등록
+POST http://localhost:8080/api/post
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nNCIsImV4cCI6MTY4ODcwNjY3NiwiaWF0IjoxNjg4NzAzMDc2fQ.dGAJO8svIT3g1qoDmqs2QQ2_R8cJr_iVwzNqVDEuhQo
+Content-Type:application/json
+
+{
+  "title" : "ttl12",
+  "contents" : "ctt12"
+}
+
+### 포스트 수정
+PUT http://localhost:8080/api/post/11
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nNCIsImV4cCI6MTY4ODcwNjY3NiwiaWF0IjoxNjg4NzAzMDc2fQ.dGAJO8svIT3g1qoDmqs2QQ2_R8cJr_iVwzNqVDEuhQo
+Content-Type: application/json
+
+{
+  "title" : "ttl11수정1",
+  "contents" : "ctt1수정1"
+}
+
+### 포스트 삭제
+DELETE http://localhost:8080/api/post/11
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nNCIsImV4cCI6MTY4ODcwNjY3NiwiaWF0IjoxNjg4NzAzMDc2fQ.dGAJO8svIT3g1qoDmqs2QQ2_R8cJr_iVwzNqVDEuhQo
+
+### 코멘트 등록
+POST http://localhost:8080/api/comment
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nNCIsImV4cCI6MTY4ODcwNjY3NiwiaWF0IjoxNjg4NzAzMDc2fQ.dGAJO8svIT3g1qoDmqs2QQ2_R8cJr_iVwzNqVDEuhQo
+Content-Type:application/json
+
+{
+  "postId" : 11,
+  "comment" : "cmt17"
+}
+
+### 코멘트 수정
+PUT http://localhost:8080/api/comment/15
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nNCIsImV4cCI6MTY4ODcwNjY3NiwiaWF0IjoxNjg4NzAzMDc2fQ.dGAJO8svIT3g1qoDmqs2QQ2_R8cJr_iVwzNqVDEuhQo
+Content-Type: application/json
+
+{
+  "comment" : "cmt15수정1"
+}
+
+### 코멘트 삭제
+DELETE http://localhost:8080/api/comment/15
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nNCIsImV4cCI6MTY4ODcwNjY3NiwiaWF0IjoxNjg4NzAzMDc2fQ.dGAJO8svIT3g1qoDmqs2QQ2_R8cJr_iVwzNqVDEuhQo
