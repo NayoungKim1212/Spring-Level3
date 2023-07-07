@@ -5,6 +5,7 @@ import com.sparta.post.dto.CommentResponseDto;
 import com.sparta.post.entity.Comment;
 import com.sparta.post.entity.Post;
 import com.sparta.post.entity.User;
+import com.sparta.post.entity.UserRoleEnum;
 import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.repository.CommentRepository;
 import com.sparta.post.repository.PostRepository;
@@ -25,8 +26,8 @@ public class CommentService {
     private final PostRepository postRepository;
 
     public ResponseEntity<CommentResponseDto> createComment(String tokenValue, CommentRequestDto requestDto) {
-        String token = authentication(tokenValue);
-        String username = getUsernameFromToken(token);
+        Claims info = authentication(tokenValue); // 토큰 인증 및 사용자 정보 반환
+        String username = info.getSubject();
         User user = userRepository.findByUsername(username).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않는 사용자 입니다."));
         Post post = postRepository.findById(requestDto.getPostId()).orElseThrow(() ->
@@ -38,31 +39,46 @@ public class CommentService {
 
     @Transactional
     public ResponseEntity<CommentResponseDto> updateComment(String tokenValue, Long id, CommentRequestDto requestDto) {
-        String token = authentication(tokenValue);
-        String username = getUsernameFromToken(token);
+        Claims info = authentication(tokenValue); // 토큰 인증 및 사용자 정보 반환
         Comment comment = findComment(id);
+        if(hasRoleAdmin(info)){ // 관리자 권한인지 확인
+            comment.update(requestDto);
+            return new ResponseEntity<>(new CommentResponseDto(comment), HttpStatus.OK);
+        }
+        String username = info.getSubject(); // jwt토큰에서 사용자의 식별자 값을 추출하여 username 변수에 할당
         usernameMatch(username, comment.getUser().getUsername());
         comment.update(requestDto);
         return new ResponseEntity<>(new CommentResponseDto(comment), HttpStatus.OK);
     }
 
     public ResponseEntity<String> deleteComment(String tokenValue, Long id) {
-        String token = authentication(tokenValue);
-        String username = getUsernameFromToken(token);
+        Claims info = authentication(tokenValue);
         Comment comment = findComment(id);
+        if(hasRoleAdmin(info)){
+            commentRepository.delete(comment);
+            return new ResponseEntity<>("댓글이 삭제 되었습니다.",HttpStatus.OK);
+        }
+        String username = info.getSubject();
         usernameMatch(username, comment.getUser().getUsername());
         commentRepository.delete(comment);
         return new ResponseEntity<>("댓글이 삭제 되었습니다.",HttpStatus.OK);
     }
 
-    private String authentication(String tokenValue) {
-        System.out.println("토큰 인증 및 반환");
+    private Claims authentication(String tokenValue) {
+        System.out.println("토큰 인증 및 사용자 정보 반환");
         String decodedToken = jwtUtil.decodingToken(tokenValue);
         String token = jwtUtil.substringToken(decodedToken);
         if (!jwtUtil.validateToken(token)) {
             throw new IllegalArgumentException("인증되지 않은 토큰입니다.");
         }
-        return token;
+        return jwtUtil.getUserInfoFromToken(token);
+    }
+
+    private boolean hasRoleAdmin(Claims info) {
+        if (info.get(jwtUtil.AUTHORIZATION_KEY).equals(UserRoleEnum.ADMIN.getAuthority())) { // UserRoleEnum.ADMIN.getAuthority()) == "ROLE_ADMIN"
+            return true;
+        }
+        return false;
     }
 
     private Comment findComment(Long id) {
@@ -76,11 +92,5 @@ public class CommentService {
         if (!loginUsername.equals(commentUsername)){
             throw new IllegalArgumentException("작성자가 일치하지 않습니다.");
         }
-    }
-
-    private String getUsernameFromToken(String token) {
-        System.out.println("토큰에서 username 추출");
-        Claims info = jwtUtil.getUserInfoFromToken(token);
-        return info.getSubject();
     }
 }
