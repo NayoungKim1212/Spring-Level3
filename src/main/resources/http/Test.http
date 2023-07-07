@@ -1,0 +1,67 @@
+### 포스트 조회
+GET http://localhost:8080/api/post
+
+### 회원가입
+POST http://localhost:8080/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "kang3",
+  "password": "Aa123456!"
+}
+
+### 로그인
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username":"kang2",
+  "password": "Aa123456!"
+}
+
+### 포스트 등록
+POST http://localhost:8080/api/post
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nMiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjg4NzE1ODU3LCJpYXQiOjE2ODg3MTIyNTd9.tS1tWly1951b2KC9bL6CsWGnZJ52VTkKb0gf513gprU
+Content-Type:application/json
+
+{
+  "title" : "ttl15",
+  "contents" : "ctt15"
+}
+
+### 포스트 수정
+PUT http://localhost:8080/api/post/1
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nMiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjg4NzE1ODU3LCJpYXQiOjE2ODg3MTIyNTd9.tS1tWly1951b2KC9bL6CsWGnZJ52VTkKb0gf513gprU
+Content-Type: application/json
+
+{
+  "title" : "ttl1수정1",
+  "contents" : "ctt1수정1"
+}
+
+### 포스트 삭제
+DELETE http://localhost:8080/api/post/11
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nMiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjg4NzE1ODU3LCJpYXQiOjE2ODg3MTIyNTd9.tS1tWly1951b2KC9bL6CsWGnZJ52VTkKb0gf513gprU
+
+### 코멘트 등록
+POST http://localhost:8080/api/comment
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nMiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjg4NzE1ODU3LCJpYXQiOjE2ODg3MTIyNTd9.tS1tWly1951b2KC9bL6CsWGnZJ52VTkKb0gf513gprU
+Content-Type:application/json
+
+{
+  "postId" : 1,
+  "comment" : "cmt1"
+}
+
+### 코멘트 수정
+PUT http://localhost:8080/api/comment/15
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nMiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjg4NzE1ODU3LCJpYXQiOjE2ODg3MTIyNTd9.tS1tWly1951b2KC9bL6CsWGnZJ52VTkKb0gf513gprU
+Content-Type: application/json
+
+{
+  "comment" : "cmt15수정1"
+}
+
+### 코멘트 삭제
+DELETE http://localhost:8080/api/comment/15
+Authorization: Bearer%20eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrYW5nMiIsImF1dGgiOiJVU0VSIiwiZXhwIjoxNjg4NzE1ODU3LCJpYXQiOjE2ODg3MTIyNTd9.tS1tWly1951b2KC9bL6CsWGnZJ52VTkKb0gf513gprU
