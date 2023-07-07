@@ -1,6 +1,7 @@
 package com.sparta.post.dto;
 
 import com.sparta.post.entity.Comment;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,5 +22,6 @@ public class CommentResponseDto {
         this.username = comment.getUser().getUsername();
         this.cratedAt = comment.getCreatedAt();
         this.modifiedAt = comment.getModifiedAt();
+
     }
 }
