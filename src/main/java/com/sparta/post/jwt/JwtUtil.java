@@ -5,6 +5,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -70,11 +71,26 @@ public class JwtUtil {
         }
     }
 
-    public String decodingToken(String tokenValue) {
+//    public String decodingToken(String tokenValue) {
+//        try {
+//            return URLDecoder.decode(tokenValue,"utf-8");
+//        } catch (UnsupportedEncodingException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+
+    // JWT Cookie 에 저장(생성된 JWT를 Cookie에 저장)
+    public void addJwtToCookie(String token, HttpServletResponse res) {
         try {
-            return URLDecoder.decode(tokenValue,"utf-8");
+            token = URLEncoder.encode(token, "utf-8").replaceAll("\\+", "%20"); // Cookie Value 에는 공백이 불가능해서 encoding 진행
+
+            Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token); // Name-Value
+            cookie.setPath("/");
+
+            // Response 객체에 Cookie 추가
+            res.addCookie(cookie);
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            logger.error(e.getMessage());
         }
     }
 
@@ -91,7 +107,8 @@ public class JwtUtil {
     // 토큰 검증(JWT 검증)
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key)
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token); // token의 위변조 검증
             return true; // setSigningKey(key) : 암호화할 때 사용한 키

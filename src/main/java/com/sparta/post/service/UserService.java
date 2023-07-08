@@ -7,6 +7,7 @@ import com.sparta.post.entity.User;
 import com.sparta.post.entity.UserRoleEnum;
 import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -79,7 +80,27 @@ public class UserService {
                 -> new IllegalArgumentException("등록된 사용자가 없습니다."));
     }
 
-    private boolean isAdmin(User user) {
+    boolean isAdmin(User user) {
+        System.out.println("권한 확인중");
         return user.getRole().equals(UserRoleEnum.ADMIN);
     }
+
+    protected User getUserFromJwt(String tokenValue) {
+        System.out.println("토큰 인증 및 사용자 정보 반환");
+
+        String token = jwtUtil.substringToken(tokenValue);
+
+        if (!jwtUtil.validateToken(token)) {
+            throw new IllegalArgumentException("인증되지 않은 토큰입니다.");
+        }
+
+        Claims info = jwtUtil.getUserInfoFromToken(token);
+        String username = info.getSubject();
+        System.out.println("username = " + username);
+
+        return this.findUser(username);
+    }
 }
+// protected : 같은 패키지 내의 다른 클래스에서 접근이 가능
+// 다른 패키지의 자식 클래스에서도 접근이 가능
+// 즉, 상속 관계에서 자식 클래스는 부모 클래스의 protected 멤버에 접근 가능
