@@ -1,7 +1,10 @@
 package com.sparta.post.service;
 
+import com.sparta.post.dto.CommentResponseDto;
 import com.sparta.post.dto.PostRequestDto;
 import com.sparta.post.dto.PostResponseDto;
+import com.sparta.post.dto.PostWithCommentResponseDto;
+import com.sparta.post.entity.Comment;
 import com.sparta.post.entity.Post;
 import com.sparta.post.entity.User;
 import com.sparta.post.entity.UserRoleEnum;
@@ -15,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -43,8 +48,15 @@ public class PostService {
                 .toList();
     }
 
-    public PostResponseDto getPost(Long id) {
-        return new PostResponseDto(findPost(id));
+    public PostWithCommentResponseDto getPost(Long id) {
+        Post post = findPost(id);
+        List<CommentResponseDto> commentResponseDtoList =
+                post.getCommentList()
+                        .stream()
+                        .sorted(Comparator.comparing(Comment::getCreatedAt).reversed())
+                        .map(CommentResponseDto::new)
+                        .toList();
+        return new PostWithCommentResponseDto(post, commentResponseDtoList);
     }
 
     @Transactional
