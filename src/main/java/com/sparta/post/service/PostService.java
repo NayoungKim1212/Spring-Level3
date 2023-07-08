@@ -8,6 +8,7 @@ import com.sparta.post.entity.Comment;
 import com.sparta.post.entity.Post;
 import com.sparta.post.entity.User;
 import com.sparta.post.entity.UserRoleEnum;
+import com.sparta.post.handler.UnauthorizedJwtException;
 import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.repository.PostRepository;
 import com.sparta.post.repository.UserRepository;
@@ -18,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -47,6 +47,17 @@ public class PostService {
                 .map(PostResponseDto::new)
                 .toList();
     }
+
+    // JPA N+1 문제 생각해보기
+//    public List<PostWithCommentResponseDto> getPosts() { // post 하나에 select 1번에 - post, commentList, Select comment 수만큼 post // 여러가지 해보기(post와 comment 따로!)
+//        List<PostWithCommentResponseDto> postWithCommentResponseDtoList = new ArrayList<>();
+//        List<Post> postList = postRepository.findAllByOrderByCreatedAtDesc();
+//        for (Post post : postList) {
+//            List<CommentResponseDto> commentResponseDtoList = post.getCommentList().stream().sorted(Comparator.comparing(Comment::getCreatedAt).reversed()).map(CommentResponseDto::new).toList();
+//            postWithCommentResponseDtoList.add(new PostWithCommentResponseDto(post, commentResponseDtoList));
+//        }
+//        return postWithCommentResponseDtoList; // FK
+//    }
 
     public PostWithCommentResponseDto getPost(Long id) {
         Post post = findPost(id);
@@ -90,7 +101,7 @@ public class PostService {
         String decodedToken = jwtUtil.decodingToken(tokenValue);
         String token = jwtUtil.substringToken(decodedToken);
         if (!jwtUtil.validateToken(token)) {
-            throw new IllegalArgumentException("인증되지 않은 토큰입니다.");
+            throw new UnauthorizedJwtException();
         }
         return jwtUtil.getUserInfoFromToken(token);
     }
