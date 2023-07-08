@@ -1,24 +1,18 @@
 package com.sparta.post.service;
 
-import com.sparta.post.dto.CommentResponseDto;
-import com.sparta.post.dto.PostRequestDto;
-import com.sparta.post.dto.PostResponseDto;
-import com.sparta.post.dto.PostWithCommentResponseDto;
+import com.sparta.post.dto.*;
 import com.sparta.post.entity.Comment;
 import com.sparta.post.entity.Post;
 import com.sparta.post.entity.User;
-import com.sparta.post.entity.UserRoleEnum;
 import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.repository.PostRepository;
 import com.sparta.post.repository.UserRepository;
-import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -29,14 +23,14 @@ public class PostService {
     private final PostRepository postRepository;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final UserService userService;
 
-    public ResponseEntity<PostResponseDto> createPost(String tokenValue, PostRequestDto requestDto) {
-        Claims info = authentication(tokenValue); // 토큰 인증 및 사용자 정보 반환
-        String username = info.getSubject();
-        User user = userRepository.findByUsername(username).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않는 사용자 입니다."));
+    public ResponseEntity<PostResponseDto> createPost(String token, PostRequestDto requestDto) {
+        User user = userService.getUserFromJwt(token);// 토큰 인증 및 사용자 정보 반환
         Post post = new Post(requestDto, user);
+
         postRepository.save(post);
+
         return new ResponseEntity<>(new PostResponseDto(post), HttpStatus.OK);
     }
 
@@ -60,48 +54,40 @@ public class PostService {
     }
 
     @Transactional
-    public ResponseEntity<PostResponseDto> updatePost(String tokenValue, Long id, PostRequestDto requestDto) {
-        Claims info = authentication(tokenValue);
+    public ResponseEntity<PostResponseDto> updatePost(String token, Long id, PostRequestDto requestDto) {
+        User user = userService.getUserFromJwt(token);
         Post post = findPost(id);
-        if(hasRoleAdmin(info)){ // 관리자 권한인지 확인
-            post.update(requestDto);
-            return new ResponseEntity<>(new PostResponseDto(post), HttpStatus.OK);
+
+        if (!userService.isAdmin(user)) { // 관리자 권한인지 확인
+            if (!user.getUsername().equals(post.getUser().getUsername())) {
+                throw new IllegalArgumentException("작성자만 수정할 수 있습니다.");
+            }
         }
-        String username = info.getSubject();
-        usernameMatch(username, post.getUser().getUsername());
         post.update(requestDto);
+
         return new ResponseEntity<>(new PostResponseDto(post), HttpStatus.OK);
     }
 
-    public ResponseEntity<?> deletePost(String tokenValue, Long id) {
-        Claims info = authentication(tokenValue);
+
+    public ResponseEntity<ErrorResponseDto> deletePost(String token, Long id) {
+        User user = userService.getUserFromJwt(token);
         Post post = findPost(id);
-        if(hasRoleAdmin(info)){
-            postRepository.delete(post);
-            return ResponseEntity.status(HttpStatus.OK).body("게시글이 삭제 되었습니다.");
+
+        if (!userService.isAdmin(user)) { // 관리자가 아닌 경우
+            if (!user.getUsername().equals(post.getUser().getUsername())) { // 작성자 미동일
+                throw new IllegalArgumentException("작성자만 삭제할 수 있습니다");
+            }
         }
-        String username = info.getSubject();
-        usernameMatch(username, post.getUser().getUsername());
         postRepository.delete(post);
-        return ResponseEntity.status(HttpStatus.OK).body("게시글이 삭제 되었습니다.");
-    }
-    private Claims authentication(String tokenValue) {
-        System.out.println("토큰 인증 및 사용자 정보 반환");
-        String decodedToken = jwtUtil.decodingToken(tokenValue);
-        String token = jwtUtil.substringToken(decodedToken);
-        if (!jwtUtil.validateToken(token)) {
-            throw new IllegalArgumentException("인증되지 않은 토큰입니다.");
-        }
-        return jwtUtil.getUserInfoFromToken(token);
+
+        ErrorResponseDto responseDto = ErrorResponseDto.builder()
+                .status(200L)
+                .error("삭제 성공")
+                .build();
+        return ResponseEntity.ok(responseDto);
+
     }
 
-    private boolean hasRoleAdmin(Claims info) {
-        System.out.println("권한 확인중");
-        if (info.get(jwtUtil.AUTHORIZATION_KEY).equals(UserRoleEnum.ADMIN.name())) {
-            return true;
-        }
-        return false;
-    }
 
     private Post findPost(Long id) {
         return postRepository.findById(id).orElseThrow(() ->
@@ -109,10 +95,10 @@ public class PostService {
         );
     }
 
-    private void usernameMatch(String loginUsername, String postUsername) {
-        if (!loginUsername.equals(postUsername)){
-            throw new IllegalArgumentException("잘못된 사용자입니다.");
-        }
-    }
+//    private void usernameMatch(String loginUsername, String postUsername) {
+//        if (!loginUsername.equals(postUsername)) {
+//            throw new IllegalArgumentException("잘못된 사용자입니다.");
+//        }
+//    }
 }
 
