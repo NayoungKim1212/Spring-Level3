@@ -2,6 +2,7 @@ package com.sparta.post.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -16,8 +17,8 @@ public class CustomExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
-    @ExceptionHandler({MissingRequestHeaderException.class})
-    public ResponseEntity<String> handlerException(MissingRequestHeaderException ex) {
+    @ExceptionHandler({MissingRequestCookieException.class})
+    public ResponseEntity<String> handlerException(MissingRequestCookieException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("토큰이 유효하지 않습니다.");
     }
 }
