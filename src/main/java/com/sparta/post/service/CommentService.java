@@ -6,6 +6,7 @@ import com.sparta.post.entity.Comment;
 import com.sparta.post.entity.Post;
 import com.sparta.post.entity.User;
 import com.sparta.post.entity.UserRoleEnum;
+import com.sparta.post.handler.UnauthorizedJwtException;
 import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.repository.CommentRepository;
 import com.sparta.post.repository.PostRepository;
@@ -70,7 +71,7 @@ public class CommentService {
         String decodedToken = jwtUtil.decodingToken(tokenValue);
         String token = jwtUtil.substringToken(decodedToken);
         if (!jwtUtil.validateToken(token)) {
-            throw new IllegalArgumentException("인증되지 않은 토큰입니다.");
+            throw new UnauthorizedJwtException();
         }
         return jwtUtil.getUserInfoFromToken(token);
     }
