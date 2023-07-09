@@ -17,8 +17,8 @@ public class CustomExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
-    @ExceptionHandler({MissingRequestCookieException.class})
-    public ResponseEntity<String> handlerException(MissingRequestCookieException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("토큰이 유효하지 않습니다.");
+    @ExceptionHandler({MissingRequestHeaderException.class, UnauthorizedJwtException.class}) // 토큰이 없거나 인증되지 않으면
+    public ResponseEntity<String> UnauthorizedException(){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰이 유효하지 않습니다.");
     }
 }
