@@ -89,7 +89,7 @@ public class PostService {
     }
 
 
-    private Post findPost(Long id) {
+    protected Post findPost(Long id) {
         return postRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("헤당 게시물은 존재하지 않습니다.")
         );
