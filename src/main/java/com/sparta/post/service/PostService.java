@@ -1,9 +1,7 @@
 package com.sparta.post.service;
 
-import com.sparta.post.dto.ErrorResponseDto;
-import com.sparta.post.dto.PostRequestDto;
-import com.sparta.post.dto.PostResponseDto;
-import com.sparta.post.dto.PostWithCommentResponseDto;
+import com.sparta.post.dto.*;
+import com.sparta.post.entity.Comment;
 import com.sparta.post.entity.Post;
 import com.sparta.post.entity.User;
 import com.sparta.post.repository.PostRepository;
@@ -36,13 +34,13 @@ public class PostService {
     public List<PostWithCommentResponseDto> getPosts() { // post 하나에 select 1번에 - post, commentList, Select comment 수만큼 post // 여러가지 해보기(post와 comment 따로!)
         return postRepository.findAllPostsWithCommentsOrderByCreatedAtDesc()
                 .stream()
-                .map(PostWithCommentResponseDto::new)
+                .map(post -> convertToPostWithCommentResponseDto(post))
                 .toList();
     }
 
     public PostWithCommentResponseDto getPost(Long id) {
         Post post = findPost(id);
-        return new PostWithCommentResponseDto(post);
+        return convertToPostWithCommentResponseDto(post);
     }
 
     @Transactional
@@ -87,5 +85,30 @@ public class PostService {
         );
     }
 
+    // Post -> PostWithCommentResponseDto
+    private PostWithCommentResponseDto convertToPostWithCommentResponseDto(Post post){
+        return PostWithCommentResponseDto.builder()
+                .id(post.getId())
+                .username(post.getUser().getUsername())
+                .title(post.getTitle())
+                .contents(post.getContents())
+                .createAt(post.getCreatedAt())
+                .modifiedAt(post.getModifiedAt())
+                .commentList(convertToCommentResponseDtoList(post.getCommentList()))
+                .build();
+    }
+
+    // post.getCommentList() -> CommentResponseDtoList
+    private List<CommentResponseDto> convertToCommentResponseDtoList(List<Comment> commentList){
+        return commentList.stream()
+                .map(comment -> CommentResponseDto.builder()
+                        .id(comment.getId())
+                        .comment(comment.getComment())
+                        .username(comment.getUser().getUsername())
+                        .createdAt(comment.getCreatedAt())
+                        .modifiedAt(comment.getModifiedAt())
+                        .build()
+                ).toList();
+    }
 }
 
