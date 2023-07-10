@@ -71,13 +71,13 @@ public class JwtUtil {
         }
     }
 
-//    public String decodingToken(String tokenValue) {
-//        try {
-//            return URLDecoder.decode(tokenValue,"utf-8");
-//        } catch (UnsupportedEncodingException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    public String decodingToken(String tokenValue) {
+        try {
+            return URLDecoder.decode(tokenValue,"utf-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     // JWT Cookie 에 저장(생성된 JWT를 Cookie에 저장)
     public void addJwtToCookie(String token, HttpServletResponse res) {

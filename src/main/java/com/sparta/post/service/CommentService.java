@@ -2,16 +2,11 @@ package com.sparta.post.service;
 
 import com.sparta.post.dto.CommentRequestDto;
 import com.sparta.post.dto.CommentResponseDto;
+import com.sparta.post.dto.ErrorResponseDto;
 import com.sparta.post.entity.Comment;
 import com.sparta.post.entity.Post;
 import com.sparta.post.entity.User;
-import com.sparta.post.entity.UserRoleEnum;
-import com.sparta.post.handler.UnauthorizedJwtException;
-import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.repository.CommentRepository;
-import com.sparta.post.repository.PostRepository;
-import com.sparta.post.repository.UserRepository;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +45,7 @@ public class CommentService {
     }
 
     @Transactional
-    public ResponseEntity<CommentResponseDto> updateComment(String token, Long postId, Long id, CommentRequestDto requestDto) {
+    public ResponseEntity<CommentResponseDto> updateComment(String token, Long id, Long postId, CommentRequestDto requestDto) {
         User currentuser = userService.getUserFromJwt(token); // 토큰 인증 및 사용자 정보 반환
         Comment comment = findComment(id, postId);
 
@@ -63,10 +58,16 @@ public class CommentService {
 //        String username = info.getSubject(); // jwt토큰에서 사용자의 식별자 값을 추출하여 username 변수에 할당
 //        usernameMatch(username, comment.getUser().getUsername());
         comment.update(requestDto);
-        return new ResponseEntity<>(new CommentResponseDto(comment), HttpStatus.OK);
+        return new ResponseEntity<>(CommentResponseDto.builder()
+                .comment(comment.getComment())
+                .id(comment.getId())
+                .username(comment.getUser().getUsername())
+                .cratedAt(comment.getCreatedAt())
+                .modifiedAt(comment.getModifiedAt())
+                .build(), HttpStatus.OK);
     }
 
-    public ResponseEntity<String> deleteComment(String token, Long id, Long postId) {
+    public ResponseEntity<ErrorResponseDto> deleteComment(String token, Long id, Long postId) {
         User currentuser = userService.getUserFromJwt(token);
         Comment comment = findComment(id, postId);
 
@@ -78,7 +79,11 @@ public class CommentService {
 //        String username = info.getSubject();
 //        usernameMatch(username, comment.getUser().getUsername());
         commentRepository.delete(comment);
-        return new ResponseEntity<>("댓글이 삭제 되었습니다.", HttpStatus.OK);
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                .status(201L)
+                .error("삭제성공")
+                .build();
+        return ResponseEntity.ok(errorResponseDto);
     }
 
 //    private Claims authentication(String tokenValue) {
@@ -101,7 +106,7 @@ public class CommentService {
 
     private Comment findComment(Long id, Long postId) {
         System.out.println("댓글 찾기");
-        return commentRepository.findByPostIdAndId(id, postId).orElseThrow(() ->
+        return commentRepository.findByPostIdAndId(postId, id).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않는 댓글 입니다."));
     }
 

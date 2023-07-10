@@ -1,5 +1,6 @@
 package com.sparta.post.dto;
 
+import com.sparta.post.entity.Comment;
 import com.sparta.post.entity.Post;
 import lombok.Getter;
 
@@ -16,13 +17,21 @@ public class PostWithCommentResponseDto {
     private String title;
     private List<CommentResponseDto> commentList;
 
-    public PostWithCommentResponseDto(Post post, List<CommentResponseDto> commentResponseDtoList) {
+    public PostWithCommentResponseDto(Post post) {
         this.id = post.getId();
         this.username = post.getUser().getUsername();
         this.contents = post.getContents();
         this.createAt = post.getCreatedAt();
         this.modifiedAt = post.getModifiedAt();
         this.title = post.getTitle();
-        this.commentList = commentResponseDtoList;
+        this.commentList = post.getCommentList().stream().map(comment ->
+                        CommentResponseDto.builder()
+                                .comment(comment.getComment())
+                                .id(comment.getId())
+                                .username(comment.getUser().getUsername())
+                                .cratedAt(comment.getCreatedAt())
+                                .modifiedAt(comment.getModifiedAt())
+                                .build()
+        ).toList();
     }
 }
