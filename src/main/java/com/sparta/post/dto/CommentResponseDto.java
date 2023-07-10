@@ -2,11 +2,12 @@ package com.sparta.post.dto;
 
 import com.sparta.post.entity.Comment;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-
+@Builder
 @Getter
 @Setter
 public class CommentResponseDto {
@@ -16,7 +17,8 @@ public class CommentResponseDto {
     private LocalDateTime cratedAt;
     private LocalDateTime modifiedAt;
 
-    public CommentResponseDto(Comment comment){
+
+    public CommentResponseDto(Comment comment) {
         this.id = comment.getId();
         this.comment = comment.getComment();
         this.username = comment.getUser().getUsername();

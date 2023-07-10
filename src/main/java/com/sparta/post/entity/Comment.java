@@ -2,6 +2,7 @@ package com.sparta.post.entity;
 
 import com.sparta.post.dto.CommentRequestDto;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,7 +12,7 @@ import lombok.Setter;
 @Setter
 @Table(name = "comment")
 @NoArgsConstructor
-public class Comment extends Timestamped{
+public class Comment extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,8 +28,9 @@ public class Comment extends Timestamped{
     @JoinColumn(name = "post_id")
     private Post post;
 
-    public Comment(CommentRequestDto requestDto, User user, Post post) {
-        this.comment = requestDto.getComment();
+    @Builder
+    public Comment(String comment, User user, Post post) {
+        this.comment = comment;
         this.user = user;
         this.post = post;
     }
