@@ -1,12 +1,12 @@
 package com.sparta.post.service;
 
-import com.sparta.post.dto.*;
+import com.sparta.post.dto.ErrorResponseDto;
+import com.sparta.post.dto.PostRequestDto;
+import com.sparta.post.dto.PostResponseDto;
+import com.sparta.post.dto.PostWithCommentResponseDto;
 import com.sparta.post.entity.Post;
 import com.sparta.post.entity.User;
-
-import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.repository.PostRepository;
-import com.sparta.post.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,8 +20,6 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
     private final UserService userService;
 
     public ResponseEntity<PostResponseDto> createPost(String token, PostRequestDto requestDto) {
@@ -33,13 +31,6 @@ public class PostService {
         return new ResponseEntity<>(new PostResponseDto(post), HttpStatus.OK);
     }
 
-//    public List<PostResponseDto> getPosts() {
-//        return postRepository
-//                .findAllByOrderByCreatedAtDesc()
-//                .stream()
-//                .map(PostResponseDto::new)
-//                .toList();
-//    }
 
     // JPA N+1 문제 생각해보기
     public List<PostWithCommentResponseDto> getPosts() { // post 하나에 select 1번에 - post, commentList, Select comment 수만큼 post // 여러가지 해보기(post와 comment 따로!)
@@ -93,10 +84,5 @@ public class PostService {
         );
     }
 
-//    private void usernameMatch(String loginUsername, String postUsername) {
-//        if (!loginUsername.equals(postUsername)) {
-//            throw new IllegalArgumentException("잘못된 사용자입니다.");
-//        }
-//    }
 }
 

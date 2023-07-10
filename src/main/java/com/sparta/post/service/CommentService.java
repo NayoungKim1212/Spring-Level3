@@ -55,8 +55,7 @@ public class CommentService {
                 throw new IllegalArgumentException("작성자만 수정할 수 있습니다.");
             }
         }
-//        String username = info.getSubject(); // jwt토큰에서 사용자의 식별자 값을 추출하여 username 변수에 할당
-//        usernameMatch(username, comment.getUser().getUsername());
+
         comment.update(requestDto);
         return new ResponseEntity<>(CommentResponseDto.builder()
                 .comment(comment.getComment())
@@ -76,8 +75,7 @@ public class CommentService {
                 throw new IllegalArgumentException("작성자만 삭제할 수 있습니다.");
             }
         }
-//        String username = info.getSubject();
-//        usernameMatch(username, comment.getUser().getUsername());
+
         commentRepository.delete(comment);
         ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
                 .status(201L)
@@ -86,23 +84,7 @@ public class CommentService {
         return ResponseEntity.ok(errorResponseDto);
     }
 
-//    private Claims authentication(String tokenValue) {
-//        System.out.println("토큰 인증 및 사용자 정보 반환");
-//        String decodedToken = jwtUtil.decodingToken(tokenValue);
-//        String token = jwtUtil.substringToken(decodedToken);
-//        if (!jwtUtil.validateToken(token)) {
-//            throw new UnauthorizedJwtException();
-//        }
-//        return jwtUtil.getUserInfoFromToken(token);
-//    }
 
-//    private boolean hasRoleAdmin(Claims info) {
-//        System.out.println("권한 확인중");
-//        if (info.get(jwtUtil.AUTHORIZATION_KEY).equals(UserRoleEnum.ADMIN.name())) { // UserRoleEnum.ADMIN.name = "ADMIN"
-//            return true;
-//        }
-//        return false;
-//    }
 
     private Comment findComment(Long id, Long postId) {
         System.out.println("댓글 찾기");
@@ -110,10 +92,4 @@ public class CommentService {
                 new IllegalArgumentException("존재하지 않는 댓글 입니다."));
     }
 
-    private void usernameMatch(String loginUsername, String commentUsername) {
-        System.out.println("로그인한 유저와 선택한 댓글의 작성자가 일치하는지 확인");
-        if (!loginUsername.equals(commentUsername)) {
-            throw new IllegalArgumentException("작성자가 일치하지 않습니다.");
-        }
-    }
 }
