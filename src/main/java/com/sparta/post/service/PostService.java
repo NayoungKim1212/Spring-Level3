@@ -34,7 +34,10 @@ public class PostService {
 
     // JPA N+1 문제 생각해보기
     public List<PostWithCommentResponseDto> getPosts() { // post 하나에 select 1번에 - post, commentList, Select comment 수만큼 post // 여러가지 해보기(post와 comment 따로!)
-        return postRepository.findAllPostsWithCommentsOrderByCreatedAtDesc().stream().map(PostWithCommentResponseDto::new).toList();
+        return postRepository.findAllPostsWithCommentsOrderByCreatedAtDesc()
+                .stream()
+                .map(PostWithCommentResponseDto::new)
+                .toList();
     }
 
     public PostWithCommentResponseDto getPost(Long id) {
