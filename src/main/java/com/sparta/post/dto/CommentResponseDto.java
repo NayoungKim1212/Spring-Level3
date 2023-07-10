@@ -1,7 +1,5 @@
 package com.sparta.post.dto;
 
-import com.sparta.post.entity.Comment;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +12,7 @@ public class CommentResponseDto {
     private Long id;
     private String comment;
     private String username;
-    private LocalDateTime cratedAt;
+    private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
 

@@ -37,7 +37,7 @@ public class CommentService {
                 .comment(comment.getComment())
                 .id(comment.getId())
                 .username(comment.getUser().getUsername())
-                .cratedAt(comment.getCreatedAt())
+                .createdAt(comment.getCreatedAt())
                 .modifiedAt(comment.getModifiedAt())
                 .build();
 
@@ -61,7 +61,7 @@ public class CommentService {
                 .comment(comment.getComment())
                 .id(comment.getId())
                 .username(comment.getUser().getUsername())
-                .cratedAt(comment.getCreatedAt())
+                .createdAt(comment.getCreatedAt())
                 .modifiedAt(comment.getModifiedAt())
                 .build(), HttpStatus.OK);
     }
