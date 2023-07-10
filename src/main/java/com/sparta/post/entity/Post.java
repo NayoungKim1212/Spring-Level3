@@ -26,6 +26,7 @@ public class Post extends Timestamped {
     @Column(name = "title", nullable = false)
     private String title;
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    @OrderBy("createdAt DESC")
     private List<Comment> commentList = new ArrayList<>();
 
 

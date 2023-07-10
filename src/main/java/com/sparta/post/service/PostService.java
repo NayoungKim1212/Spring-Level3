@@ -1,12 +1,8 @@
 package com.sparta.post.service;
 
 import com.sparta.post.dto.*;
-import com.sparta.post.entity.Comment;
 import com.sparta.post.entity.Post;
 import com.sparta.post.entity.User;
-
-import com.sparta.post.entity.UserRoleEnum;
-import com.sparta.post.handler.UnauthorizedJwtException;
 
 import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.repository.PostRepository;
@@ -17,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -38,34 +33,22 @@ public class PostService {
         return new ResponseEntity<>(new PostResponseDto(post), HttpStatus.OK);
     }
 
-    public List<PostResponseDto> getPosts() {
-        return postRepository
-                .findAllByOrderByCreatedAtDesc()
-                .stream()
-                .map(PostResponseDto::new)
-                .toList();
-    }
+//    public List<PostResponseDto> getPosts() {
+//        return postRepository
+//                .findAllByOrderByCreatedAtDesc()
+//                .stream()
+//                .map(PostResponseDto::new)
+//                .toList();
+//    }
 
     // JPA N+1 문제 생각해보기
-//    public List<PostWithCommentResponseDto> getPosts() { // post 하나에 select 1번에 - post, commentList, Select comment 수만큼 post // 여러가지 해보기(post와 comment 따로!)
-//        List<PostWithCommentResponseDto> postWithCommentResponseDtoList = new ArrayList<>();
-//        List<Post> postList = postRepository.findAllByOrderByCreatedAtDesc();
-//        for (Post post : postList) {
-//            List<CommentResponseDto> commentResponseDtoList = post.getCommentList().stream().sorted(Comparator.comparing(Comment::getCreatedAt).reversed()).map(CommentResponseDto::new).toList();
-//            postWithCommentResponseDtoList.add(new PostWithCommentResponseDto(post, commentResponseDtoList));
-//        }
-//        return postWithCommentResponseDtoList; // FK
-//    }
+    public List<PostWithCommentResponseDto> getPosts() { // post 하나에 select 1번에 - post, commentList, Select comment 수만큼 post // 여러가지 해보기(post와 comment 따로!)
+        return postRepository.findAllPostsWithCommentsOrderByCreatedAtDesc().stream().map(PostWithCommentResponseDto::new).toList();
+    }
 
     public PostWithCommentResponseDto getPost(Long id) {
         Post post = findPost(id);
-        List<CommentResponseDto> commentResponseDtoList =
-                post.getCommentList()
-                        .stream()
-                        .sorted(Comparator.comparing(Comment::getCreatedAt).reversed())
-                        .map(CommentResponseDto::new)
-                        .toList();
-        return new PostWithCommentResponseDto(post, commentResponseDtoList);
+        return new PostWithCommentResponseDto(post);
     }
 
     @Transactional
