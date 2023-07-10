@@ -25,7 +25,7 @@ public class PostController {
 
     // 전체 게시글 조회
     @GetMapping("/post")
-    public List<PostResponseDto> getPosts() {
+    public List<PostWithCommentResponseDto> getPosts() {
         return postService.getPosts();
     }
 

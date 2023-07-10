@@ -5,6 +5,7 @@ import com.sparta.post.dto.LoginRequestDto;
 import com.sparta.post.dto.UserRequestDto;
 import com.sparta.post.entity.User;
 import com.sparta.post.entity.UserRoleEnum;
+import com.sparta.post.handler.UnauthorizedJwtException;
 import com.sparta.post.jwt.JwtUtil;
 import com.sparta.post.repository.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -35,7 +36,7 @@ public class UserService {
         // 회원 중복 확인
         Optional<User> checkUsername = userRepository.findByUsername(username);
         if (checkUsername.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
+            throw new IllegalArgumentException("중복된 유저네임이 존재합니다.");
         }
         // 사용자 Role 확인
         UserRoleEnum role = UserRoleEnum.USER;
@@ -61,10 +62,10 @@ public class UserService {
         String password = requestDto.getPassword();
 
         User user = userRepository.findByUsername(username).orElseThrow(()
-                -> new IllegalArgumentException("등록된 사용자를 찾을 수 없습니다."));
+                -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
 
         if(!passwordEncoder.matches(password, user.getPassword())){
-            throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw  new IllegalArgumentException("회원을 찾을 수 없습니다.");
         }
 
         String token = jwtUtil.createToken(user.getUsername(), user.getRole());
@@ -87,11 +88,11 @@ public class UserService {
 
     protected User getUserFromJwt(String tokenValue) {
         System.out.println("토큰 인증 및 사용자 정보 반환");
-
-        String token = jwtUtil.substringToken(tokenValue);
+        String decodedToken = jwtUtil.decodingToken(tokenValue);
+        String token = jwtUtil.substringToken(decodedToken);
 
         if (!jwtUtil.validateToken(token)) {
-            throw new IllegalArgumentException("인증되지 않은 토큰입니다.");
+            throw new UnauthorizedJwtException();
         }
 
         Claims info = jwtUtil.getUserInfoFromToken(token);
